@@ -8,6 +8,7 @@
     <style>
        :root {
             --gold-glow: #FFD700;
+            --glow-opacity: rgba(255, 215, 0, 0.5);
             --background-color: #000;
             --text-color: #F0F0F0;
             --sidebar-width: 280px;
@@ -15,6 +16,7 @@
             --secondary-color: #000;
             --accent-color: #8B7500;
         }
+
        body {
             margin: 0;
             font-family: 'Arial', sans-serif;
@@ -68,7 +70,7 @@
             border-radius: 20px;
             border: 0px solid var(--gold-glow);
             border-left: 1px solid var(--gold-glow);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 20px var(--glow-opacity);
             position: relative;
             overflow: hidden;
             margin-left: -20px;
@@ -107,12 +109,10 @@
         }
 
         .time-segment {
-            background: linear-gradient(135deg, 
-                rgba(255, 215, 0, 0.1), 
-                rgba(255, 215, 0, 0.05));
+            background: rgba(255, 255, 255, 0.05);
             padding: 12px 20px;
             border-radius: 12px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            border: 1px solid var(--gold-glow);
             min-width: 30px;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
@@ -132,16 +132,12 @@
 
         .ampm-indicator {
             font-size: 0.8em;
-            background: linear-gradient(135deg, 
-                var(--gold-glow), 
-                #ff9900);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--gold-glow);
             font-weight: 600;
             padding: 12px 20px;
             border-radius: 20px;
-            border: 1px solid rgba(255, 215, 0, 0.5);
+            border: 1px solid var(--gold-glow);
             backdrop-filter: blur(5px);
         }
 
@@ -185,18 +181,18 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #00ff00;
+            background: var(--gold-glow);
             box-shadow: 0 0 10px #00ff00;
             animation: indicatorPulse 1.5s infinite;
         }
 
         .indicator-dot:nth-child(2) {
-            background: #ffff00;
+            background: var(--gold-glow);
             animation-delay: 0.3s;
         }        
 
         .indicator-dot:nth-child(3) {
-            background: #ff4444;
+            background: var(--gold-glow);
             animation-delay: 0.6s;
         }
 
@@ -271,6 +267,24 @@
               
 
 <script>
+
+    // وظيفة تحديث اللون من تطبيق MIT App Inventor
+    function updateThemeColor() {
+        try {
+            // جلب اللون من WebViewString (سيرسل التطبيق مثلاً #40e0d0)
+            let newColor = window.AppInventor.getWebViewString();
+            
+            if (newColor && newColor.length > 3) {
+                document.documentElement.style.setProperty('--gold-glow', newColor);
+                // تحديث الشفافية للتوهج
+                let glowColor = newColor + "4D"; // إضافة شفافية 30%
+                document.documentElement.style.setProperty('--glow-opacity', glowColor);
+            }
+        } catch (e) {
+            // في حال المتصفح العادي لا يفعل شيئاً
+        }
+    }
+
     // سكربت تحديث الوقت
         function updateTime() {
             const now = new Date();
@@ -332,6 +346,7 @@
                     }, 500);
                 });
             }
+            updateThemeColor(); // فحص اللون مع كل ثانية تحديث
         }
         setInterval(updateTime, 1000);
         updateTime();
