@@ -297,10 +297,10 @@ function startMicrophone() {
         analyser = audioContext.createAnalyser();
         
         // 🔥 إعدادات حساسية عالية جداً 🔥
-        analyser.fftSize = 2048; // زيادة من 2048 إلى 4096 لدقة أعلى
-        analyser.smoothingTimeConstant = 0.3; // تقليل السلاسة لزيادة الحساسية
-        analyser.minDecibels = -100; // حساسية للأصوات المنخفضة جداً
-        analyser.maxDecibels = -5;   // رفع الحد الأعلى
+        analyser.fftSize = 256; // زيادة من 2048 إلى 4096 لدقة أعلى
+        analyser.smoothingTimeConstant = 0.8; // تقليل السلاسة لزيادة الحساسية
+        analyser.minDecibels = -90; // حساسية للأصوات المنخفضة جداً
+        analyser.maxDecibels = -10;   // رفع الحد الأعلى
         
         // ربط الميكروفون
         microphone = audioContext.createMediaStreamSource(stream);
