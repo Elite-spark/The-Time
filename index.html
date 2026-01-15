@@ -279,43 +279,103 @@
         document.getElementById('timeDisplayContainer').style.display = 'flex';
     });
 
-    // بدء الميكروفون
-    function startMicrophone() {
-        if (isMicActive) return;
+// بدء الميكروفون
+function startMicrophone() {
+    if (isMicActive) return;
+    
+    // 1. أولاً، نطلب إذن الميكروفون
+    navigator.mediaDevices.getUserMedia({ 
+        audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+            channelCount: 1
+        }
+    }).then(function(stream) {
+        // 2. بعد الحصول على الإذن، نبدأ AudioContext
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
         
-        // 1. أولاً، نطلب إذن الميكروفون بطريقة تعمل مع WebView
-        navigator.mediaDevices.getUserMedia({ 
-            audio: {
-                echoCancellation: false,
-                noiseSuppression: false,
-                autoGainControl: false,
-                channelCount: 1
+        // 🔥 إعدادات حساسية عالية جداً 🔥
+        analyser.fftSize = 4096; // زيادة من 2048 إلى 4096 لدقة أعلى
+        analyser.smoothingTimeConstant = 0.3; // تقليل السلاسة لزيادة الحساسية
+        analyser.minDecibels = -100; // حساسية للأصوات المنخفضة جداً
+        analyser.maxDecibels = -5;   // رفع الحد الأعلى
+        
+        // ربط الميكروفون
+        microphone = audioContext.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+        
+        isMicActive = true;
+        createAudioBars();
+        updateVisualizer();
+        
+    }).catch(function(error) {
+        console.log('خطأ في الميكروفون:', error);
+        // إذا فشل الميكروفون، نعرض بار وهمي بحساسية عالية
+        simulateAudioBarsHighSensitivity();
+    });
+}
+
+// محاكاة البار الصوتي بحساسية عالية (للاختبار)
+function simulateAudioBarsHighSensitivity() {
+    createAudioBars();
+    const bars = document.querySelectorAll('.audio-bar');
+    const barCount = bars.length;
+    let frame = 0;
+    
+    function simulate() {
+        frame++;
+        
+        bars.forEach((bar, i) => {
+            // حساب المسافة من المنتصف
+            const middleIndex = barCount / 2;
+            const distanceFromMiddle = Math.abs(i - middleIndex);
+            
+            // 🔥 حساسية عالية: حتى الأصوات الضعيفة تخلق حركة 🔥
+            const baseWave = Math.sin(frame * 0.03 + i * 0.15) * 40;
+            const middleBoost = distanceFromMiddle < 5 ? 
+                Math.sin(frame * 0.05) * 30 : 0;
+            const randomNoise = Math.random() * 25;
+            
+            // تضخيم الأصوات الضعيفة
+            let height = 15 + baseWave + middleBoost + randomNoise;
+            
+            // تضخيم إضافي للأعمدة الجانبية
+            if (distanceFromMiddle > 15) {
+                height = height * 0.9; // تقليل بسيط للحواف
             }
-        }).then(function(stream) {
-            // 2. بعد الحصول على الإذن، نبدأ AudioContext
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
             
-            // إعدادات حساسية عالية
-            analyser.fftSize = 2048;
-            analyser.smoothingTimeConstant = 0.1; // حساسية عالية جداً
-            analyser.minDecibels = -100;
-            analyser.maxDecibels = -10;
+            height = Math.max(5, Math.min(120, height));
+            bar.style.height = height + 'px';
             
-            // ربط الميكروفون
-            microphone = audioContext.createMediaStreamSource(stream);
-            microphone.connect(analyser);
+            // تأثيرات التوهج
+            const intensity = height / 120;
             
-            isMicActive = true;
-            createAudioBars();
-            updateVisualizer();
-            
-        }).catch(function(error) {
-            console.log('خطأ في الميكروفون:', error);
-            // إذا فشل الميكروفون، نعرض بار وهمي (للتجربة فقط)
-            simulateAudioBars();
+            if (distanceFromMiddle < 5) {
+                // أعمدة المنتصف: أكثر توهجاً
+                bar.style.boxShadow = `0 0 ${10 + intensity * 30}px var(--gold-glow)`;
+                bar.style.background = `linear-gradient(to top, 
+                    var(--gold-glow), 
+                    hsl(51, ${90 + intensity * 10}%, ${65 + intensity * 35}%))`;
+            } else {
+                // الأعمدة الجانبية
+                bar.style.boxShadow = `0 0 ${6 + intensity * 20}px var(--gold-glow)`;
+                bar.style.background = `linear-gradient(to top, 
+                    var(--gold-glow), 
+                    hsl(51, ${75 + intensity * 25}%, ${55 + intensity * 25}%))`;
+            }
         });
+        
+        // مستوى وهمي متغير
+        const fakeLevel = 30 + Math.sin(frame * 0.08) * 40 + Math.random() * 30;
+        document.getElementById('levelValue').textContent = Math.round(fakeLevel);
+        
+        animationFrameId = requestAnimationFrame(simulate);
     }
+    
+    simulate();
+}
 
     // إنشاء أشرطة الصوت
     function createAudioBars() {
