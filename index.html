@@ -420,8 +420,8 @@ function updateVisualizer() {
             let value = dataArray[frequencyIndex] || 0;
             
             // تضخيم إضافي للأصوات المنخفضة
-            if (value < 50) value = value * 3; // تضخيم ×3 للأصوات المنخفضة
-            else if (value < 100) value = value * 2; // تضخيم ×2 للأصوات المتوسطة
+            if (value < 50) value = value * 2; // تضخيم ×3 للأصوات المنخفضة
+            else if (value < 100) value = value * 1; // تضخيم ×2 للأصوات المتوسطة
             
             if (value > maxLevel) maxLevel = value;
             
