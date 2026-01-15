@@ -6,7 +6,7 @@
     <title>صفحة Elite Spark - الطقس والتحكم</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-       :root {
+        :root {
             --gold-glow: #FFD700;
             --glow-opacity: rgba(255, 215, 0, 0.5);
             --background-color: #000;
@@ -17,13 +17,12 @@
             --accent-color: #8B7500;
         }
 
-       body {
+        body {
             margin: 0;
             font-family: 'Arial', sans-serif;
             background-color: #000;
             color: var(--text-color);
             overflow-x: hidden;
-            
         }
          
         .elite1-time-container {
@@ -59,7 +58,7 @@
             flex-direction: row; 
         }    
                 
-      .elite-time-container {
+        .elite-time-container {
             text-align: center;
             width: 90%;
             height: 60%; 
@@ -74,7 +73,6 @@
             position: relative;
             overflow: hidden;
             margin-left: -20px;
-            
         }
 
         .elite-time-container::before {
@@ -158,7 +156,6 @@
             background: rgba(0, 0, 0, 0.5);
             border-radius: 15px;
             border: 0px solid var(--gold-glow);
-    
         }
 
         .date-item {
@@ -196,6 +193,101 @@
             animation-delay: 0.6s;
         }
 
+        /* إضافة أنماط جديدة للميكروفون */
+        .elite-time-btn {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .elite-time-btn:hover {
+            transform: scale(1.05);
+            text-shadow: 
+                0 0 15px var(--gold-glow),
+                0 0 25px rgba(255, 215, 0, 0.7);
+        }
+
+        .microphone-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            gap: 30px;
+        }
+
+        .audio-visualizer {
+            width: 90%;
+            height: 120px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            border: 1px solid var(--gold-glow);
+            box-shadow: 0 0 20px var(--glow-opacity);
+        }
+
+        .audio-bar {
+            width: 8px;
+            min-height: 4px;
+            background: linear-gradient(to top, 
+                var(--gold-glow), 
+                #ffed4e);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.05s ease;
+            box-shadow: 0 0 8px var(--gold-glow);
+        }
+
+        .microphone-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .mic-level {
+            font-size: 0.9em;
+            color: var(--gold-glow);
+            text-shadow: 0 0 10px var(--gold-glow);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--gold-glow);
+        }
+
+        .stop-mic-btn {
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--gold-glow);
+            border: 1px solid var(--gold-glow);
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            text-shadow: 0 0 10px var(--gold-glow);
+            box-shadow: 0 0 15px var(--glow-opacity);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stop-mic-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px var(--gold-glow);
+        }
+
+        .mic-icon {
+            font-size: 1.2em;
+            animation: micPulse 2s infinite;
+        }
+
         /* حركات */
         @keyframes scanline {
             0% { transform: translateX(-100%); }
@@ -216,6 +308,26 @@
             0%, 100% { text-shadow: 0 0 10px var(--gold-glow); }
             50% { text-shadow: 0 0 20px var(--gold-glow); }
         }
+
+        @keyframes micPulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes barGlow {
+            0%, 100% { 
+                box-shadow: 0 0 8px var(--gold-glow);
+            }
+            50% { 
+                box-shadow: 0 0 15px var(--gold-glow);
+            }
+        }
         
         .blink {
             animation: blink 1s infinite;
@@ -224,130 +336,302 @@
         @keyframes blink {
             50% { opacity: 0; }
         }
-    </style>
 
+        /* كلاس للإخفاء */
+        .hidden {
+            display: none !important;
+        }
+
+        /* كلاس للإظهار */
+        .visible {
+            display: flex !important;
+        }
+    </style>
 </head>
 <body>
-     
-     
-     
-     
-     
-              <div class="elite1-time-container">
-                <div class="elite-time-container">
-                    <div class="time-indicators">
-                        <div class="indicator-dot"></div>
-                        <div class="indicator-dot"></div>
-                        <div class="indicator-dot"></div>
-                    </div> 
+    <div class="elite1-time-container">
+        <div class="elite-time-container">
+            <div class="time-indicators">
+                <div class="indicator-dot"></div>
+                <div class="indicator-dot"></div>
+                <div class="indicator-dot"></div>
+            </div> 
 
-                    <div class="elite2-time-container">
-    
-                    <div class="time-display">
-                        <div class="time-segment" id="elite-time">12</div>
-                        <div class="time-separator">:</div>
-                        <div class="time-segment" id="elite2-time">59</div>
-                        <div class="ampm-indicator" id="elite3-time">PM</div>
-                    </div>
-    
-                    <div class="date-display">
-                        <div class="date-item">
-                            <span id="elite1-time">الجمعة — 15 مارس</span>
-                        </div>
-                        <div class="date-item">
-                            <span class="date-icon">⚡</span>
-                            <span>Elite Time</span>
-                        </div>
-                    </div>
-
-                    </div>
-
+            <!-- الحاوية الأصلية للوقت والتاريخ -->
+            <div class="elite2-time-container" id="timeDisplayContainer">
+                <div class="time-display">
+                    <div class="time-segment" id="elite-time">12</div>
+                    <div class="time-separator">:</div>
+                    <div class="time-segment" id="elite2-time">59</div>
+                    <div class="ampm-indicator" id="elite3-time">PM</div>
                 </div>
-              </div>
-              
+    
+                <div class="date-display">
+                    <div class="date-item">
+                        <span id="elite1-time">الجمعة — 15 مارس</span>
+                    </div>
+                    <div class="date-item">
+                        <span class="date-icon">⚡</span>
+                        <span class="elite-time-btn" id="eliteTimeBtn">Elite Time</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- حاوية الميكروفون المخفية -->
+            <div class="microphone-container" id="micContainer">
+                <div class="audio-visualizer" id="audioVisualizer">
+                    <!-- سيتم إضافة الأشرطة ديناميكياً -->
+                </div>
+                
+                <div class="microphone-controls">
+                    <div class="mic-level" id="micLevel">
+                        حساسية الميكروفون: <span id="levelValue">0</span>%
+                    </div>
+                    
+                    <button class="stop-mic-btn" id="stopMicBtn">
+                        <i class="fas fa-microphone-slash mic-icon"></i>
+                        إيقاف الميكروفون
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script>
+    // العناصر الأساسية
+    const eliteTimeBtn = document.getElementById('eliteTimeBtn');
+    const timeDisplayContainer = document.getElementById('timeDisplayContainer');
+    const micContainer = document.getElementById('micContainer');
+    const audioVisualizer = document.getElementById('audioVisualizer');
+    const micLevel = document.getElementById('micLevel');
+    const levelValue = document.getElementById('levelValue');
+    const stopMicBtn = document.getElementById('stopMicBtn');
+
+    // متغيرات الميكروفون
+    let audioContext;
+    let analyser;
+    let microphone;
+    let isMicActive = false;
+    const barCount = 45;
+    let animationId;
+
+    // إنشاء أشرطة الصوت
+    function createAudioBars() {
+        audioVisualizer.innerHTML = '';
+        for (let i = 0; i < barCount; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'audio-bar';
+            bar.style.height = '4px';
+            audioVisualizer.appendChild(bar);
+        }
+    }
+
+    // تبديل العرض بين الوقت والميكروفون
+    eliteTimeBtn.addEventListener('click', async function() {
+        // إخفاء الوقت وإظهار الميكروفون
+        timeDisplayContainer.classList.add('hidden');
+        micContainer.classList.add('visible');
+        
+        // بدء تشغيل الميكروفون
+        await startMicrophone();
+    });
+
+    // إيقاف الميكروفون والعودة للوقت
+    stopMicBtn.addEventListener('click', function() {
+        // إيقاف الميكروفون
+        stopMicrophone();
+        
+        // إخفاء الميكروفون وإظهار الوقت
+        micContainer.classList.remove('visible');
+        timeDisplayContainer.classList.remove('hidden');
+    });
+
+    // بدء تشغيل الميكروفون
+    async function startMicrophone() {
+        try {
+            if (isMicActive) return;
+            
+            // إنشاء سياق الصوت
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            
+            // إعدادات عالية الحساسية
+            analyser.fftSize = 2048;
+            analyser.smoothingTimeConstant = 0.4;
+            analyser.minDecibels = -80;
+            analyser.maxDecibels = -10;
+            
+            // الحصول على إذن الميكروفون
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: {
+                    echoCancellation: false,
+                    noiseSuppression: false,
+                    autoGainControl: false
+                } 
+            });
+            
+            // ربط الميكروفون بالمحلل
+            microphone = audioContext.createMediaStreamSource(stream);
+            microphone.connect(analyser);
+            
+            isMicActive = true;
+            createAudioBars();
+            updateAudioVisualizer();
+            
+        } catch (error) {
+            console.error('خطأ في الوصول للميكروفون:', error);
+            // العودة للعرض السابق في حالة الخطأ
+            micContainer.classList.remove('visible');
+            timeDisplayContainer.classList.remove('hidden');
+        }
+    }
+
+    // إيقاف الميكروفون
+    function stopMicrophone() {
+        if (!isMicActive) return;
+        
+        // إيقاف الرسوم المتحركة
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+        }
+        
+        // قطع اتصال الميكروفون
+        if (microphone) {
+            microphone.disconnect();
+            microphone.mediaStream.getTracks().forEach(track => track.stop());
+        }
+        
+        // إغلاق سياق الصوت
+        if (audioContext && audioContext.state !== 'closed') {
+            audioContext.close();
+        }
+        
+        isMicActive = false;
+    }
+
+    // تحديث مرئيات الصوت
+    function updateAudioVisualizer() {
+        if (!isMicActive) return;
+        
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        const bars = document.querySelectorAll('.audio-bar');
+        
+        function update() {
+            if (!isMicActive) return;
+            
+            // الحصول على بيانات التردد
+            analyser.getByteFrequencyData(dataArray);
+            
+            let total = 0;
+            let max = 0;
+            
+            // تحديث كل شريط
+            bars.forEach((bar, i) => {
+                const barIndex = Math.floor(i * bufferLength / barCount);
+                const value = dataArray[barIndex];
+                const height = Math.max(4, value / 2);
+                
+                bar.style.height = `${height}px`;
+                
+                // تحديث التوهج بناءً على الشدة
+                const intensity = value / 255;
+                bar.style.boxShadow = `0 0 ${8 + intensity * 20}px var(--gold-glow)`;
+                bar.style.background = `linear-gradient(to top, 
+                    var(--gold-glow), 
+                    hsl(51, ${70 + intensity * 30}%, ${50 + intensity * 30}%))`;
+                
+                total += value;
+                if (value > max) max = value;
+            });
+            
+            // تحديث مستوى الصوت
+            const average = total / bufferLength;
+            const level = Math.min(100, Math.round((max / 255) * 100));
+            levelValue.textContent = level;
+            
+            // تحديث لون مؤشر المستوى بناءً على الشدة
+            micLevel.style.color = `hsl(51, 100%, ${50 + level / 2}%)`;
+            micLevel.style.textShadow = `0 0 ${10 + level / 5}px var(--gold-glow)`;
+            
+            animationId = requestAnimationFrame(update);
+        }
+        
+        update();
+    }
 
     // وظيفة تحديث اللون من تطبيق MIT App Inventor
     function updateThemeColor() {
         try {
-            // جلب اللون من WebViewString (سيرسل التطبيق مثلاً #40e0d0)
             let newColor = window.AppInventor.getWebViewString();
             
             if (newColor && newColor.length > 3) {
                 document.documentElement.style.setProperty('--gold-glow', newColor);
-                // تحديث الشفافية للتوهج
-                let glowColor = newColor + "4D"; // إضافة شفافية 30%
+                let glowColor = newColor + "4D";
                 document.documentElement.style.setProperty('--glow-opacity', glowColor);
             }
         } catch (e) {
-            // في حال المتصفح العادي لا يفعل شيئاً
+            // تجاهل في المتصفح العادي
         }
     }
 
     // سكربت تحديث الوقت
-        function updateTime() {
-            const now = new Date();
-            const optionsDay = { weekday: 'long' };
-            const optionsDate = { day: 'numeric', month: 'short' };
-    
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            let seconds = now.getSeconds();
-    
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
-    
-            const day = now.toLocaleDateString('AR', optionsDay);
-            const date = now.toLocaleDateString('AR', optionsDate);
-    
-            // لكل عنصر
-            const timeElements = {
-                "elite-time": hours,
-                "elite2-time": minutes,
-                "elite3-time": ampm,
-                "elite1-time": `${day} — ${date}`,
-                "elite-seconds": seconds,
-                "elite-day": day,
-                "elite-date": date,
-                "elite-full-date": now.toLocaleDateString('AR', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                })
-            };
-    
-            // تحديث جميع العناصر
-            for (const [id, value] of Object.entries(timeElements)) {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.innerText = value;
-            
-                    // إضافة تأثير عند تغيير الدقائق
-                    if (id === "elite2-time" && now.getSeconds() === 0) {
-                        element.style.transform = "scale(1.1)";
-                        setTimeout(() => {
-                            element.style.transform = "scale(1)";
-                        }, 300);
-                    }
+    function updateTime() {
+        const now = new Date();
+        const optionsDay = { weekday: 'long' };
+        const optionsDate = { day: 'numeric', month: 'short' };
+        
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        let seconds = now.getSeconds();
+        
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        
+        const day = now.toLocaleDateString('AR', optionsDay);
+        const date = now.toLocaleDateString('AR', optionsDate);
+        
+        const timeElements = {
+            "elite-time": hours,
+            "elite2-time": minutes,
+            "elite3-time": ampm,
+            "elite1-time": `${day} — ${date}`,
+        };
+        
+        for (const [id, value] of Object.entries(timeElements)) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.innerText = value;
+                
+                if (id === "elite2-time" && now.getSeconds() === 0) {
+                    element.style.transform = "scale(1.1)";
+                    setTimeout(() => {
+                        element.style.transform = "scale(1)";
+                    }, 300);
                 }
             }
-    
-            // تأثيرات إضافية كل 10 ثواني
-            if (now.getSeconds() % 10 === 0) {
-                document.querySelectorAll('.time-segment, .digit, .neu-hour, .neu-minute').forEach(el => {
-                    el.style.filter = "brightness(1.2)";
-                    setTimeout(() => {
-                        el.style.filter = "brightness(1)";
-                    }, 500);
-                });
-            }
-            updateThemeColor(); // فحص اللون مع كل ثانية تحديث
         }
-        setInterval(updateTime, 1000);
+        
+        if (now.getSeconds() % 10 === 0) {
+            document.querySelectorAll('.time-segment').forEach(el => {
+                el.style.filter = "brightness(1.2)";
+                setTimeout(() => {
+                    el.style.filter = "brightness(1)";
+                }, 500);
+            });
+        }
+        
+        updateThemeColor();
+    }
+    
+    // تهيئة التطبيق
+    document.addEventListener('DOMContentLoaded', function() {
         updateTime();
- </script> 
+        setInterval(updateTime, 1000);
+    });
+</script>
+</body>
+</html>
