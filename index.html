@@ -297,7 +297,7 @@ function startMicrophone() {
         analyser = audioContext.createAnalyser();
         
         // 🔥 إعدادات حساسية عالية جداً 🔥
-        analyser.fftSize = 4096; // زيادة من 2048 إلى 4096 لدقة أعلى
+        analyser.fftSize = 2048; // زيادة من 2048 إلى 4096 لدقة أعلى
         analyser.smoothingTimeConstant = 0.3; // تقليل السلاسة لزيادة الحساسية
         analyser.minDecibels = -100; // حساسية للأصوات المنخفضة جداً
         analyser.maxDecibels = -5;   // رفع الحد الأعلى
@@ -421,7 +421,7 @@ function updateVisualizer() {
             
             // تضخيم إضافي للأصوات المنخفضة
             if (value < 50) value = value * 2; // تضخيم ×3 للأصوات المنخفضة
-            else if (value < 100) value = value * 1; // تضخيم ×2 للأصوات المتوسطة
+            else if (value < 100) value = value * 2; // تضخيم ×2 للأصوات المتوسطة
             
             if (value > maxLevel) maxLevel = value;
             
