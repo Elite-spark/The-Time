@@ -297,9 +297,9 @@ function startMicrophone() {
         analyser = audioContext.createAnalyser();
         
         // 🔥 إعدادات حساسية عالية جداً 🔥
-        analyser.fftSize = 256; // زيادة من 2048 إلى 4096 لدقة أعلى
+        analyser.fftSize = 2048; // زيادة من 2048 إلى 4096 لدقة أعلى
         analyser.smoothingTimeConstant = 0.8; // تقليل السلاسة لزيادة الحساسية
-        analyser.minDecibels = -90; // حساسية للأصوات المنخفضة جداً
+        analyser.minDecibels = -80; // حساسية للأصوات المنخفضة جداً
         analyser.maxDecibels = -10;   // رفع الحد الأعلى
         
         // ربط الميكروفون
@@ -420,15 +420,15 @@ function updateVisualizer() {
             let value = dataArray[frequencyIndex] || 0;
             
             // تضخيم إضافي للأصوات المنخفضة
-            if (value < 50) value = value * 2; // تضخيم ×3 للأصوات المنخفضة
+            //if (value < 50) value = value * 2; // تضخيم ×3 للأصوات المنخفضة
             else if (value < 100) value = value * 2; // تضخيم ×2 للأصوات المتوسطة
             
             if (value > maxLevel) maxLevel = value;
             
             // حساب الارتفاع مع تضخيم كبير
             const baseHeight = 2;
-            const amplifiedValue = Math.min(255, value * 1.5); // تضخيم إضافي
-            const height = baseHeight + (amplifiedValue / 255) * 110;
+            const amplifiedValue = Math.min(255, value * 1.0); // تضخيم إضافي
+            const height = baseHeight + (amplifiedValue / 255) * 90;
             
             bar.style.height = height + 'px';
             
