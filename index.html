@@ -391,81 +391,81 @@ function simulateAudioBarsHighSensitivity() {
     }
 
     // تحديث البار الصوتي (مع بيانات حقيقية)
-    function updateVisualizer() {
-        if (!isMicActive) return;
+function updateVisualizer() {
+    if (!isMicActive) return;
+    
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    const bars = document.querySelectorAll('.audio-bar');
+    const barCount = bars.length;
+    
+    function update() {
+        analyser.getByteFrequencyData(dataArray);
+        let maxLevel = 0;
         
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        const bars = document.querySelectorAll('.audio-bar');
+        bars.forEach((bar, i) => {
+            // توزيع الترددات بشكل متناسق من اليسار واليمين
+            let frequencyIndex;
+            
+            if (i < barCount / 2) {
+                // النصف الأول (من اليسار للمنتصف)
+                frequencyIndex = Math.floor((i / (barCount / 2)) * (bufferLength * 0.3));
+            } else {
+                // النصف الثاني (من المنتصف لليمين)
+                const relativeIndex = i - (barCount / 2);
+                frequencyIndex = Math.floor((relativeIndex / (barCount / 2)) * (bufferLength * 0.3));
+            }
+            
+            // تضخيم الحساسية
+            let value = dataArray[frequencyIndex] || 0;
+            
+            // تضخيم إضافي للأصوات المنخفضة
+            if (value < 50) value = value * 3; // تضخيم ×3 للأصوات المنخفضة
+            else if (value < 100) value = value * 2; // تضخيم ×2 للأصوات المتوسطة
+            
+            if (value > maxLevel) maxLevel = value;
+            
+            // حساب الارتفاع مع تضخيم كبير
+            const baseHeight = 2;
+            const amplifiedValue = Math.min(255, value * 1.5); // تضخيم إضافي
+            const height = baseHeight + (amplifiedValue / 255) * 110;
+            
+            bar.style.height = height + 'px';
+            
+            // تأثير التوهج حسب الشدة
+            const intensity = amplifiedValue / 255;
+            
+            // جعل الأعمدة في المنتصف أكثر حساسية للأصوات العالية
+            const middleIndex = barCount / 2;
+            const distanceFromMiddle = Math.abs(i - middleIndex);
+            
+            // إذا كان العمود في المنتصف، يزيد التوهج أكثر
+            if (distanceFromMiddle < 5) {
+                bar.style.boxShadow = `0 0 ${8 + intensity * 25}px var(--gold-glow)`;
+                bar.style.background = `linear-gradient(to top, 
+                    var(--gold-glow), 
+                    hsl(51, ${85 + intensity * 15}%, ${60 + intensity * 40}%))`;
+            } else {
+                bar.style.boxShadow = `0 0 ${5 + intensity * 20}px var(--gold-glow)`;
+                bar.style.background = `linear-gradient(to top, 
+                    var(--gold-glow), 
+                    hsl(51, ${70 + intensity * 30}%, ${50 + intensity * 30}%))`;
+            }
+        });
         
-        function update() {
-            analyser.getByteFrequencyData(dataArray);
-            let maxLevel = 0;
-            
-            bars.forEach((bar, i) => {
-                // حساب متوسط لشريط واحد
-                const start = Math.floor(i * bufferLength / barCount);
-                const end = Math.floor((i + 1) * bufferLength / barCount);
-                let sum = 0;
-                
-                for (let j = start; j < end; j++) {
-                    sum += dataArray[j];
-                    if (dataArray[j] > maxLevel) maxLevel = dataArray[j];
-                }
-                
-                const avg = sum / (end - start);
-                const height = 2 + (avg / 255) * 100; // تضخيم
-                bar.style.height = height + 'px';
-                
-                // تأثير التوهج حسب الشدة
-                const intensity = avg / 255;
-                bar.style.boxShadow = `0 0 ${5 + intensity * 15}px var(--gold-glow)`;
-            });
-            
-            // تحديث مؤشر المستوى
-            const level = Math.min(100, Math.round((maxLevel / 255) * 100));
-            document.getElementById('levelValue').textContent = level;
-            
-            // استمرار التحديث
-            animationFrameId = requestAnimationFrame(update);
-        }
+        // تحديث مؤشر المستوى مع تضخيم
+        const amplifiedLevel = Math.min(100, Math.round((maxLevel / 255) * 100 * 1.8));
+        document.getElementById('levelValue').textContent = amplifiedLevel;
         
-        update();
+        // استمرار التحديث
+        animationFrameId = requestAnimationFrame(update);
     }
+    
+    update();
+}
 
-    // محاكاة البار الصوتي (للاختبار فقط)
-    function simulateAudioBars() {
-        createAudioBars();
-        const bars = document.querySelectorAll('.audio-bar');
-        let frame = 0;
-        
-        function simulate() {
-            frame++;
-            
-            bars.forEach((bar, i) => {
-                // إنشاء نمط موجي وهمي
-                const wave1 = Math.sin(frame * 0.05 + i * 0.2) * 30;
-                const wave2 = Math.sin(frame * 0.03 + i * 0.1) * 20;
-                const noise = Math.random() * 15;
-                const height = 10 + Math.max(0, wave1 + wave2 + noise);
-                
-                bar.style.height = height + 'px';
-                
-                // توهج حسب الارتفاع
-                const intensity = height / 100;
-                bar.style.boxShadow = `0 0 ${5 + intensity * 15}px var(--gold-glow)`;
-            });
-            
-            // مستوى وهمي
-            const fakeLevel = 20 + Math.sin(frame * 0.1) * 30 + Math.random() * 20;
-            document.getElementById('levelValue').textContent = Math.round(fakeLevel);
-            
-            animationFrameId = requestAnimationFrame(simulate);
-        }
-        
-        simulate();
-    }
 
+    
     // إيقاف الميكروفون
     function stopMicrophone() {
         if (!isMicActive) return;
