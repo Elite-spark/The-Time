@@ -514,7 +514,7 @@ function updateVisualizer() {
         });
         
         // تحديث مؤشر المستوى مع تضخيم
-        const amplifiedLevel = Math.min(100, Math.round((maxLevel / 255) * 100 * 1.8));
+        const amplifiedLevel = Math.min(100, Math.round((maxLevel / 255) * 100 * 1.2));
         document.getElementById('levelValue').textContent = amplifiedLevel;
         
         // استمرار التحديث
